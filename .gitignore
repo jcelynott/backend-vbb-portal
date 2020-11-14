@@ -275,3 +275,4 @@ vbb_backend/media/
 .ipython/
 .env
 .envs/*
+.vscode/settings.json
