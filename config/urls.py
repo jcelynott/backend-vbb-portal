@@ -1,15 +1,47 @@
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.permissions import AllowAny
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="VBB API",
+        default_version="v1",
+        description="Api Documentation for VBB",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="-"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=(AllowAny,),
+)
+
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
+    ),
+    # API Docs
+    url(
+        r"^swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
+    url(
+        r"^swagger/$",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    url(
+        r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
@@ -21,7 +53,7 @@ urlpatterns = [
 # API URLS
 urlpatterns += [
     # API base url
-    path("api/", include("config.api_router")),
+    path("api/v1/", include("config.api_router")),
     # DRF auth token
     path("auth-token/", obtain_auth_token),
 ]
