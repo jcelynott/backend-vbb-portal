@@ -77,6 +77,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "vbb_backend.users.apps.UsersConfig",
+    "vbb_backend.library.apps.LibraryConfig",
+    "vbb_backend.session.apps.SessionConfig",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
