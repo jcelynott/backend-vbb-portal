@@ -13,6 +13,27 @@ The Backend code for Village Book Builders Portal
 
 :License: MIT
 
+Intial Setup
+------------
+
+The following steps should be completed in order to properly run the vbb-backend-portal on your local machine. 
+Some steps may vary based on your operating system and some installation steps may be skipped if the required packages are already installed.
+If you encounter issues in this process which can't be resolved with a 20 minute Google search and debug, please reach out via the back-end channel of the VBB Slack group.
+
+(first time global installations)
+1) Install python3+ [https://realpython.com/installing-python/]
+2) Install pip [https://pip.pypa.io/en/stable/installing/]
+3) Install postgresql [https://pip.pypa.io/en/stable/installing/]
+4) Install redis [https://redis.io/download]
+5) Create a database in postgresql titled `vbb` in postgresql [https://www.freecodecamp.org/news/how-to-get-started-with-postgresql-9d3bc1dd1b11/]
+
+(to run)
+6) Clone and cd into the backend-vbb-portal repository
+7) Run `virtualenv env`
+8) Run `source env/bin/activate` (path may differ depending on where /activate is installed)
+9) Run `pip install -r requirements/local.txt`
+10) Run `python manage.py runserver`
+
 
 Settings
 --------
