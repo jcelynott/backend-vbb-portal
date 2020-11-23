@@ -3,6 +3,8 @@ from django.db import models
 from vbb_backend.utils.models.base import BaseUUIDModel
 from vbb_backend.users.models import Mentor
 
+from vbb_backend.library.models import Slot
+
 
 class SessionRule(BaseUUIDModel):
     """
@@ -10,6 +12,9 @@ class SessionRule(BaseUUIDModel):
     The Session Rule will be tied to a Library Computer Slot
     """
 
+    slot = models.ForeignKey(
+        Slot, on_delete=models.SET_NULL, null=True
+    )  # Represents the Connected Slot
     start = models.DateTimeField()  # All Date Times in UTC
     end = models.DateTimeField(null=True, blank=True)  # All Date Times in UTC
     mentor = models.ForeignKey(Mentor, on_delete=models.PROTECT)
@@ -26,4 +31,3 @@ class Session(BaseUUIDModel):
     start = models.DateTimeField()  # All Date Times in UTC
     end = models.DateTimeField()  # All Date Times in UTC
     is_mentor_confirmed = models.BooleanField(default=None)
-    is_mentee_confirmed = models.BooleanField(default=None)

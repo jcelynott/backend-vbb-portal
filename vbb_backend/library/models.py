@@ -1,7 +1,17 @@
 import enum
 from django.db import models
+from django.db.models.base import Model
 
 from vbb_backend.utils.models.base import BaseUUIDModel
+
+from vbb_backend.users.models import User
+
+
+class LanguageEnum(enum.Enum):
+    ENGLISH = "ENGLISH"
+
+
+LanguageChoices = [(e.value, e.name) for e in LanguageEnum]
 
 
 class Library(BaseUUIDModel):
@@ -19,18 +29,13 @@ class Library(BaseUUIDModel):
     announcements_group = models.CharField(max_length=50, null=True, blank=True)
     collaboration_group = models.CharField(max_length=50, null=True, blank=True)
 
+    headmaster = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
     class Meta:
         verbose_name_plural = "Libraries"
 
     def __str__(self):
         return self.name
-
-
-class LanguageEnum(enum.Enum):
-    ENGLISH = "ENGLISH"
-
-
-LanguageChoices = [(e.value, e.name) for e in LanguageEnum]
 
 
 class Computer(BaseUUIDModel):
@@ -42,7 +47,6 @@ class Computer(BaseUUIDModel):
         Library,
         on_delete=models.PROTECT,
     )
-    language = models.CharField(max_length=254, choices=LanguageChoices)
     computer_number = models.IntegerField(null=True)
     computer_email = models.EmailField(max_length=70, null=True)
     room_id = models.CharField(max_length=100, null=True)
@@ -80,6 +84,4 @@ class Slot(BaseUUIDModel):
     end = models.DateTimeField()  # All Date Times are in UTC
     event_id = models.CharField(max_length=60, null=True, blank=True)
     hangouts_link = models.CharField(max_length=60, null=True, blank=True)
-
-    #
-    # Assigned Session Variable to be added
+    is_assigned = models.BooleanField(default=False)
