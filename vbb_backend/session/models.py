@@ -1,7 +1,6 @@
 from django.db import models
 
 from vbb_backend.utils.models.base import BaseUUIDModel
-from vbb_backend.users.models import Mentor
 
 from vbb_backend.library.models import Slot
 
@@ -19,7 +18,7 @@ class SessionRule(BaseUUIDModel):
     )  # Represents the Connected Slot
     start = models.DateTimeField()  # All Date Times in UTC
     end = models.DateTimeField(null=True, blank=True)  # All Date Times in UTC
-    mentor = models.ForeignKey(Mentor, on_delete=models.PROTECT)
+    mentor = models.ForeignKey(User, on_delete=models.PROTECT)
 
 
 class Session(BaseUUIDModel):

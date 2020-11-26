@@ -9,6 +9,11 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import (
+    TokenVerifyView,
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -43,6 +48,11 @@ urlpatterns = [
     url(
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
+    path("api/v1/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path(
+        "api/v1/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
+    ),
+    path("api/v1/auth/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
