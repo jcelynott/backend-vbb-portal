@@ -85,3 +85,12 @@ class Slot(BaseUUIDModel):
     event_id = models.CharField(max_length=60, null=True, blank=True)
     hangouts_link = models.CharField(max_length=60, null=True, blank=True)
     is_assigned = models.BooleanField(default=False)
+
+
+class MenteeSlotAssociation(BaseUUIDModel):
+    """
+    This connects the mentee user object with a Slot Object
+    """
+
+    mentee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    slot = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)

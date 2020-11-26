@@ -5,6 +5,8 @@ from vbb_backend.users.models import Mentor
 
 from vbb_backend.library.models import Slot
 
+from vbb_backend.users.models import User
+
 
 class SessionRule(BaseUUIDModel):
     """
@@ -31,3 +33,15 @@ class Session(BaseUUIDModel):
     start = models.DateTimeField()  # All Date Times in UTC
     end = models.DateTimeField()  # All Date Times in UTC
     is_mentor_confirmed = models.BooleanField(default=None)
+
+
+class MenteeSessionAssociation(BaseUUIDModel):
+    """
+    This connects the mentee user object with a Slot Object
+    """
+
+    mentee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
+    wont_attend = models.BooleanField(default=None, null=True)
+    is_absent = models.BooleanField(default=None, null=True)
+    notes = models.TextField(default=None, null=True)
