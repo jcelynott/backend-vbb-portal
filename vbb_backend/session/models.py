@@ -32,14 +32,15 @@ class Session(BaseUUIDModel):
     start = models.DateTimeField()  # All Date Times in UTC
     end = models.DateTimeField()  # All Date Times in UTC
     is_mentor_confirmed = models.BooleanField(default=None)
+    #TODO: do we no longer need an "is_student_confirmed" field?
 
 
-class MenteeSessionAssociation(BaseUUIDModel):
+class StudentSessionAssociation(BaseUUIDModel):
     """
-    This connects the mentee user object with a Slot Object
+    This connects the student user object with a Slot Object
     """
 
-    mentee = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    student = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
     wont_attend = models.BooleanField(default=None, null=True)
     is_absent = models.BooleanField(default=None, null=True)

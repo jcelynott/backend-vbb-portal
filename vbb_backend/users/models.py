@@ -16,9 +16,12 @@ class User(AbstractUser):
     """
 
     class UserTypeEnum(enum.Enum):
-        MENTEE = "100"
+        STUDENT = "100"
         MENTOR = "200"
-        HEADMASTER = "300"
+        ADVISOR = "300"
+        DIRECTOR = "400"
+        TEACHER = "500"
+        HEADMASTER = "600"
 
     UserTypeChoices = [(e.value, e.name) for e in UserTypeEnum]
 
@@ -69,13 +72,13 @@ class User(AbstractUser):
         return self.verification_level == self.VerificationLevelEnum.VERIFIED.value
 
 
-class Mentee(BaseUUIDModel):
+class Student(BaseUUIDModel):
     user = models.OneToOneField(
         User,
         on_delete=models.SET_NULL,
         related_name="mp",
         null=True,
         blank=True,
-        verbose_name=_("User Object of Mentee"),
+        verbose_name=_("User Object of Student"),
     )
-    # Further Mentee Information Here
+    # Further Student Information Here
