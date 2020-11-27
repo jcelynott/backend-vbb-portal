@@ -11,12 +11,12 @@ from vbb_backend.utils.models.question import QuestionareAnswers, QuestionareQue
 
 
 class UserTypeEnum(enum.Enum):
-    STUDENT = "100"
-    MENTOR = "200"
-    ADVISOR = "300"
-    DIRECTOR = "400"
-    TEACHER = "500"
-    HEADMASTER = "600"
+    STUDENT = 100
+    MENTOR = 200
+    TEACHER = 300
+    DIRECTOR = 400
+    ADVISOR = 500
+    HEADMASTER = 600
 
 
 UserTypeChoices = [(e.value, e.name) for e in UserTypeEnum]
