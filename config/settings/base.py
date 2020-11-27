@@ -77,7 +77,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "vbb_backend.users.apps.UsersConfig",
-    "vbb_backend.library.apps.LibraryConfig",
+    "vbb_backend.program.apps.ProgramConfig",
     "vbb_backend.session.apps.SessionConfig",
     # Your stuff: custom apps go here
 ]

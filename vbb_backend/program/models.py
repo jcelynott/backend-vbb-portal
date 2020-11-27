@@ -3,11 +3,12 @@ from django.db import models
 from django.db.models.base import Model
 
 from vbb_backend.utils.models.base import BaseUUIDModel
-from vbb_backend.users.models import User
+from vbb_backend.users.models import User, UserTypeEnum
 
 
 class LanguageEnum(enum.Enum):
     ENGLISH = "ENGLISH"
+
 
 LanguageChoices = [(e.value, e.name) for e in LanguageEnum]
 
@@ -40,8 +41,24 @@ class Program(BaseUUIDModel):
     village_info_link = models.CharField(max_length=200, null=True, blank=True)
     default_language = models.CharField(max_length=254, choices=LanguageChoices)
 
+    ACCESS_CONTROL = {"program_director": [UserTypeEnum.ADVISOR]}
 
-class School(BaseUUIDModel): #LATER keep track of student attendance, and grades
+    @staticmethod
+    def has_write_permission(request):
+        return request.user.is_superuser
+
+    @staticmethod
+    def has_read_permission(request):
+        return request.user.is_superuser
+
+    def has_object_write_permission(self, request):
+        return request.user.is_superuser or request.user == self.program_director
+
+    def has_object_update_permission(self, request):
+        return self.has_object_write_permission(request)
+
+
+class School(BaseUUIDModel):  # LATER keep track of student attendance, and grades
     """
     This model represents a school in a village served by VBB.
 
@@ -49,7 +66,7 @@ class School(BaseUUIDModel): #LATER keep track of student attendance, and grades
         but we would like to keep track (as much as possible) of which students are going
         to which schools in the village. This will facilitate our ultimate company goal
         to track and reduce school dropouts.
-    
+
     Users associated to this school (through foreign keys):
         Headmaster(s)
         Students (through classrooms)
@@ -59,8 +76,8 @@ class School(BaseUUIDModel): #LATER keep track of student attendance, and grades
     """
 
     name = models.CharField(max_length=40, null=True, blank=True)
-    program = models.ForeignKey(Program, on_delete=models.SET_NULL,null=True)
-    longitude = models.DecimalField(max_digits=9,decimal_places=6)
+    program = models.ForeignKey(Program, on_delete=models.SET_NULL, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     # link to 3rd party LMS ?
     # has studens (students have foreign keys back to school)
@@ -83,10 +100,10 @@ class Classroom(BaseUUIDModel):
     """
 
     name = models.CharField(max_length=40, null=True, blank=True)
-    school = models.ForeignKey(School, on_delete=models.SET_NULL,null=True)
+    school = models.ForeignKey(School, on_delete=models.SET_NULL, null=True)
 
 
-class Library(BaseUUIDModel): 
+class Library(BaseUUIDModel):
     """
     This Model represents a Library in a Village Book Builders Program.
     Not all VBB Programs currently have libraries
@@ -95,8 +112,8 @@ class Library(BaseUUIDModel):
     """
 
     name = models.CharField(max_length=40, null=True, blank=True)
-    program = models.ForeignKey(Program, on_delete=models.SET_NULL,null=True)
-    longitude = models.DecimalField(max_digits=9,decimal_places=6)
+    program = models.ForeignKey(Program, on_delete=models.SET_NULL, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
 
     class Meta:
@@ -113,12 +130,14 @@ class Book(BaseUUIDModel):
         isbn: the 13 digit identifying barcode on the back of the book (TODO: may need to adjustthis to allow for ISBN-9)
         library: the library the book belongs to
         reading_level: the grade level this book is associated with (ie 0 is kindergarten, 12 is 12th grade level, etc)
+        is_available: set to true when the book is not lended to anyone and is available at the library
     """
 
-    title = models.CharField(max_length=40, null=True, blank=True)
-    isbn = models.IntegerField(max_digits=13, null=True, blank=True)
     library = models.ForeignKey(Library, on_delete=models.SET_NULL, null=True)
+    title = models.CharField(max_length=40, null=True, blank=True)
+    isbn = models.IntegerField(null=True, blank=True)
     reading_level = models.IntegerField(max_digits=2, null=True, blank=True)
+    is_available = models.BooleanField(default=True)
 
 
 class Checkout(BaseUUIDModel):
@@ -126,11 +145,12 @@ class Checkout(BaseUUIDModel):
     This model represents a checkout instance to keep track of who has checked out books at a village library and when
     """
 
-    user = models.ForeignKey(User, on_delete = models.SET_NULL, null=True)
-    book = models.ForeignKey(Book, on_delete = models.SETT_NULL, null=True)
-    checkout_date = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
+    checkout_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
-    extension_date = models.DateTimeField()
+    extension_date = models.DateTimeField(null=True, blank=True)
+    has_returned = models.BooleanField(default=False)
 
 
 class Computer(BaseUUIDModel):
@@ -147,9 +167,7 @@ class Computer(BaseUUIDModel):
     room_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
-        return (
-            f"{str(self.mentor_program)} {str(self.computer_number)} + ({self.computer_email})"
-        )
+        return f"{str(self.mentor_program)} {str(self.computer_number)} + ({self.computer_email})"
 
 
 class Slot(BaseUUIDModel):
