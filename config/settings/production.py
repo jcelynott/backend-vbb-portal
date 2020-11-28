@@ -216,3 +216,5 @@ MIDDLEWARE += [
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
+
+COLLECTFAST_ENABLED = False
