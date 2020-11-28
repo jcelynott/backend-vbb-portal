@@ -96,7 +96,7 @@ class UserQuestionareAnswers(QuestionareAnswers):
     user = models.OneToOneField(
         User,
         on_delete=models.SET_NULL,
-        null=False,
+        null=True,
         blank=False,
     )
 
@@ -104,9 +104,7 @@ class UserQuestionareAnswers(QuestionareAnswers):
 class Student(BaseUUIDModel):
     user = models.OneToOneField(
         User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.CASCADE,
     )
     # Further Student Information Here
 
@@ -114,9 +112,7 @@ class Student(BaseUUIDModel):
 class Mentor(BaseUUIDModel):
     user = models.OneToOneField(
         User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.CASCADE,
     )
     # Further Mentor Information Here
 
@@ -124,8 +120,6 @@ class Mentor(BaseUUIDModel):
 class HeadMaster(BaseUUIDModel):
     user = models.OneToOneField(
         User,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.CASCADE,
     )
     # Further HeadMaster Information Here

@@ -5,6 +5,10 @@ from django.db.models.base import Model
 from vbb_backend.utils.models.base import BaseUUIDModel
 from vbb_backend.users.models import User, UserTypeEnum
 
+import pytz
+
+TIMEZONES = tuple(zip(pytz.all_timezones, pytz.all_timezones))
+
 
 class LanguageEnum(enum.Enum):
     ENGLISH = "ENGLISH"
@@ -32,7 +36,7 @@ class Program(BaseUUIDModel):
     """
 
     name = models.CharField(max_length=40, null=True, blank=True)
-    time_zone = models.CharField(max_length=40, null=True, blank=True)
+    time_zone = models.CharField(max_length=32, choices=TIMEZONES)
     calendar_id = models.CharField(max_length=254, null=True)
     whatsapp_group = models.CharField(max_length=254, null=True)
     announcements_group = models.CharField(max_length=254, null=True, blank=True)
@@ -41,7 +45,7 @@ class Program(BaseUUIDModel):
     village_info_link = models.CharField(max_length=200, null=True, blank=True)
     default_language = models.CharField(max_length=254, choices=LanguageChoices)
 
-    ACCESS_CONTROL = {"program_director": [UserTypeEnum.ADVISOR]}
+    ACCESS_CONTROL = {"program_director": [UserTypeEnum.ADVISOR.value]}
 
     @staticmethod
     def has_write_permission(request):
@@ -136,7 +140,7 @@ class Book(BaseUUIDModel):
     library = models.ForeignKey(Library, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=40, null=True, blank=True)
     isbn = models.IntegerField(null=True, blank=True)
-    reading_level = models.IntegerField(max_digits=2, null=True, blank=True)
+    reading_level = models.IntegerField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
 
 

@@ -2,7 +2,7 @@ from django.db import models
 
 from vbb_backend.utils.models.base import BaseUUIDModel
 
-from vbb_backend.library.models import Slot
+from vbb_backend.program.models import Slot
 
 from vbb_backend.users.models import User
 
@@ -32,7 +32,7 @@ class Session(BaseUUIDModel):
     start = models.DateTimeField()  # All Date Times in UTC
     end = models.DateTimeField()  # All Date Times in UTC
     is_mentor_confirmed = models.BooleanField(default=None)
-    #TODO: do we no longer need an "is_student_confirmed" field?
+    # TODO: do we no longer need an "is_student_confirmed" field?
 
 
 class StudentSessionAssociation(BaseUUIDModel):

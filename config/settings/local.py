@@ -60,3 +60,15 @@ INSTALLED_APPS += ["django_extensions"]  # noqa F405
 CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+
+# Simple JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=env("JWT_ACCESS_TOKEN_LIFETIME", default=1000000000)
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        minutes=env("JWT_REFRESH_TOKEN_LIFETIME", default=3000000000)
+    ),
+    "ROTATE_REFRESH_TOKENS": True,
+}
