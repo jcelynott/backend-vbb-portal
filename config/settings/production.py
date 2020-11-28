@@ -4,7 +4,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.celery import CeleryIntegration
-
+import os
 
 from .base import *  # noqa
 from .base import env
@@ -207,9 +207,12 @@ sentry_sdk.init(
 # Your stuff...
 # ------------------------------------------------------------------------------
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE += [
     # Simplified static file serving.
     # https://warehouse.python.org/project/whitenoise/
     "whitenoise.middleware.WhiteNoiseMiddleware",
-)
+]
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+STATIC_ROOT = os.path.join(ROOT_DIR, "static")
