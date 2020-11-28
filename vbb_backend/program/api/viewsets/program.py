@@ -1,10 +1,11 @@
 from django.db.models import query
-from rest_framework.viewsets import ModelViewSet
-from vbb_backend.program.models import Program
-from rest_framework.permissions import IsAuthenticated
 from dry_rest_permissions.generics import DRYPermissions
-from vbb_backend.program.api.serializers.program import ProgramSerializer
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
+
+from vbb_backend.program.api.serializers.program import ProgramSerializer
+from vbb_backend.program.models import Program
 from vbb_backend.users.models import UserTypeEnum
 
 
