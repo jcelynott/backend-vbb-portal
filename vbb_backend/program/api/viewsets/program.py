@@ -12,6 +12,7 @@ class ProgramViewSet(ModelViewSet):
     queryset = Program.objects.all()
     permission_classes = [IsAuthenticated, DRYPermissions]
     serializer_class = ProgramSerializer
+    lookup_field = "external_id"
 
     def get_queryset(self):
         queryset = self.queryset
@@ -21,5 +22,5 @@ class ProgramViewSet(ModelViewSet):
         elif user.user_type in [UserTypeEnum.HEADMASTER.value]:
             queryset = queryset.filter(program_director=user)
         else:
-            raise PermissionDenied({"permission": "denied"})
-        return self.queryset
+            raise PermissionDenied()
+        return queryset

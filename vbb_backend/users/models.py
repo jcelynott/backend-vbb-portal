@@ -22,7 +22,7 @@ class UserTypeEnum(enum.Enum):
 UserTypeChoices = [(e.value, e.name) for e in UserTypeEnum]
 
 
-class User(AbstractUser):
+class User(AbstractUser, BaseUUIDModel):
     """Default user for Village Book Builders Backend.
     The AbstractUser Model already includes most of the required fields for a User.
     The Extra fields are used to store details of a user in VBB
