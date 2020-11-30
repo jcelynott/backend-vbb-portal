@@ -6,6 +6,7 @@ from rest_framework_nested.routers import NestedSimpleRouter
 from vbb_backend.program.api.viewsets.program import ProgramViewSet
 from vbb_backend.program.api.viewsets.school import SchoolViewSet
 from vbb_backend.program.api.viewsets.classroom import ClassroomViewSet
+from vbb_backend.users.api.viewsets.student import StudentViewSet
 
 if settings.DEBUG:
     router = DefaultRouter()
@@ -26,6 +27,11 @@ school_nested_router = NestedSimpleRouter(
 
 school_nested_router.register(r"classroom", ClassroomViewSet)
 
+classroom_nested_router = NestedSimpleRouter(
+    school_nested_router, r"classroom", lookup="classroom"
+)
+
+classroom_nested_router.register(r"student", StudentViewSet)
 
 app_name = "api"
 
@@ -33,4 +39,5 @@ urlpatterns = [
     url(r"^", include(router.urls)),
     url(r"^", include(program_nested_router.urls)),
     url(r"^", include(school_nested_router.urls)),
+    url(r"^", include(classroom_nested_router.urls)),
 ]

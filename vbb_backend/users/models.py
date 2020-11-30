@@ -21,6 +21,8 @@ class UserTypeEnum(enum.Enum):
 
 UserTypeChoices = [(e.value, e.name) for e in UserTypeEnum]
 
+from vbb_backend.program.models import Classroom, School, LanguageChoices, TIMEZONES
+
 
 class User(AbstractUser, BaseUUIDModel):
     """Default user for Village Book Builders Backend.
@@ -47,30 +49,24 @@ class User(AbstractUser, BaseUUIDModel):
     vbb_chapter = models.CharField(
         max_length=40, null=True, blank=True, verbose_name=_("VBB Chapter")
     )
-    date_of_birth = ""
-    primary_language = models.CharField(max_length=70, null=True, blank=True)
-    time_zone = models.CharField(max_length=40, null=True)
-    charged = models.TextField(max_length=1024, null=True)  # Mentors Only
-    address = models.TextField()  # Mentors Only
+    date_of_birth = models.DateField(blank=False)
+    primary_language = models.CharField(max_length=254, choices=LanguageChoices)
+    time_zone = models.CharField(max_length=32, choices=TIMEZONES)
+
     initials = models.CharField(max_length=6, null=True)
     personal_email = models.EmailField(
         null=True, unique=True, verbose_name=_("Personal Email")
     )
 
     phone = PhoneNumberField(blank=True, verbose_name=_("Phone Number"))
-    is_adult = models.BooleanField(default=False)  # Mentors
     occupation = models.CharField(
         max_length=70, null=True, blank=True, verbose_name=_("Occupation")
     )
-    affiliation = models.CharField(
-        max_length=70, null=True, blank=True, verbose_name=_("Affiliation")
-    )  # Mentors Only
+
     referral_source = models.CharField(
         max_length=200, null=True, blank=True, verbose_name=_("Refferal")
     )
-    desired_involvement = models.CharField(
-        max_length=200, null=True, blank=True
-    )  # Mentors Specific
+
     city = models.CharField(max_length=70, null=True, blank=True)
     notes = models.TextField(
         max_length=512, null=True, blank=True
@@ -106,6 +102,43 @@ class Student(BaseUUIDModel):
         User,
         on_delete=models.CASCADE,
     )
+    classroom = models.ForeignKey(
+        Classroom,
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False,
+    )
+    school_level = models.IntegerField()
+
+    @staticmethod
+    def has_create_permission(request):
+        school = School.objects.get(
+            external_id=request.parser_context["kwargs"]["school_external_id"]
+        )
+        return (
+            request.user.is_superuser or request.user == school.program.program_director
+        )
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_read_permission(request):
+        return True  # User Queryset Filtering Here
+
+    def has_object_write_permission(self, request):
+        return (
+            request.user.is_superuser
+            or request.user == self.classroom.school.program.program_director
+        )
+
+    def has_object_update_permission(self, request):
+        return self.has_object_write_permission(request)
+
+    def has_object_read_permission(self, request):
+        return self.has_object_write_permission(request)
+
     # Further Student Information Here
 
 
@@ -115,6 +148,13 @@ class Mentor(BaseUUIDModel):
         on_delete=models.CASCADE,
     )
     # Further Mentor Information Here
+    charged = models.TextField(max_length=1024, null=True)
+    address = models.TextField()
+    desired_involvement = models.CharField(max_length=200, null=True, blank=True)
+    affiliation = models.CharField(
+        max_length=70, null=True, blank=True, verbose_name=_("Affiliation")
+    )
+    is_adult = models.BooleanField(default=None, null=True)
 
 
 class HeadMaster(BaseUUIDModel):

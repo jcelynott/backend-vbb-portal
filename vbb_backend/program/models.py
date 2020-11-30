@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.base import Model
 
 from vbb_backend.utils.models.base import BaseUUIDModel
-from vbb_backend.users.models import User, UserTypeEnum
+from vbb_backend.users.models import UserTypeEnum
 
 import pytz
 
@@ -41,7 +41,9 @@ class Program(BaseUUIDModel):
     whatsapp_group = models.CharField(max_length=254, null=True)
     announcements_group = models.CharField(max_length=254, null=True, blank=True)
     collaboration_group = models.CharField(max_length=254, null=True, blank=True)
-    program_director = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    program_director = models.ForeignKey(
+        "users.User", on_delete=models.SET_NULL, null=True
+    )
     village_info_link = models.CharField(max_length=200, null=True, blank=True)
     default_language = models.CharField(max_length=254, choices=LanguageChoices)
 
@@ -144,7 +146,9 @@ class Classroom(BaseUUIDModel):
         school = School.objects.get(
             external_id=request.parser_context["kwargs"]["school_external_id"]
         )
-        return request.user.is_superuser or request.user == school.program.program_director
+        return (
+            request.user.is_superuser or request.user == school.program.program_director
+        )
 
     @staticmethod
     def has_write_permission(request):
@@ -209,7 +213,7 @@ class Checkout(BaseUUIDModel):
     This model represents a checkout instance to keep track of who has checked out books at a village library and when
     """
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True)
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True)
     checkout_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
@@ -267,5 +271,5 @@ class StudentSlotAssociation(BaseUUIDModel):
     This connects the student user object with a Slot Object
     """
 
-    student = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    student = models.ForeignKey("users.User", on_delete=models.SET_NULL, null=True)
     slot = models.ForeignKey(Slot, on_delete=models.SET_NULL, null=True)
