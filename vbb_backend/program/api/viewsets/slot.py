@@ -1,12 +1,19 @@
 from dry_rest_permissions.generics import DRYPermissions
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from vbb_backend.program.api.serializers.slot import SlotSerializer
 from vbb_backend.program.models import Computer, Program, Slot
+from vbb_backend.session.api.serializer.sessionrule import SessionRuleSerializer
+from vbb_backend.session.models import SessionRule
 from vbb_backend.users.models import UserTypeEnum
+
+from drf_yasg.utils import swagger_auto_schema
 
 
 class SlotViewSet(ModelViewSet):
@@ -39,3 +46,15 @@ class SlotViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(computer=self.get_computer())
+
+    @swagger_auto_schema(responses={200: SessionRuleSerializer()})
+    @action(detail=True, methods=["get"])
+    def mentor(self, request, pk):
+        slot = self.get_object()
+        rule_object = SessionRule.objects.filter(slot=slot)
+        if rule_object.exists():
+            return Response(
+                SessionRuleSerializer(rule_object.order_by("-start").latest()).data
+            )
+        else:
+            return Response({"mentor": "Not Found"}, status=status.HTTP_404_NOT_FOUND)
