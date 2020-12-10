@@ -1,6 +1,8 @@
 import enum
+from datetime import datetime
 from django.db import models
 from django.db.models.base import Model
+from rest_framework.exceptions import ValidationError
 
 from vbb_backend.utils.models.base import BaseUUIDModel
 from vbb_backend.users.models import UserTypeEnum
@@ -280,14 +282,26 @@ class Slot(BaseUUIDModel):
     the slot will be assigned to a mentor, which connects the mentor app and the program app
     """
 
+    # Default Min date not used as this can cause issues in some databases and systems
+    DEAFULT_INIT_DATE = datetime.fromisoformat(
+        "2000-01-03 00:00:00"
+    )  # First Monday of the year 2000
+    # DO NOT CHANGE THE DEFAULT INIT DATE | USED FOR EASE OF USE
+
     computer = models.ForeignKey(
         Computer,
         on_delete=models.PROTECT,
         null=True,
     )
     language = models.CharField(max_length=254, choices=LanguageChoices)
-    start = models.DateTimeField()  # All Date Times in UTC
-    end = models.DateTimeField()  # All Date Times are in UTC
+    schedule_start = models.DateTimeField(
+        null=False, blank=False
+    )  # All Date Times in UTC
+    schedule_end = models.DateTimeField(
+        null=False, blank=False
+    )  # All Date Times are in UTC
+    start_date = models.DateField(auto_now=True)  # When the slot becomes active
+    end_date = models.DateField(null=True, blank=True)  # if and when the slot ends
     event_id = models.CharField(max_length=60, null=True, blank=True)
     hangouts_link = models.CharField(max_length=60, null=True, blank=True)
     max_students = models.IntegerField(default=1)
@@ -296,6 +310,65 @@ class Slot(BaseUUIDModel):
     )  # Storing to avoid recalculation each time
     is_mentor_assigned = models.BooleanField(default=False)
     is_student_assigned = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+
+        if Slot.objects.filter(
+            computer=self.computer,
+            schedule_end__gt=self.schedule_start,
+            schedule_start__lt=self.schedule_end,
+        ).exists():
+            raise ValidationError({"schedule": "Conflict Found"})
+
+        return super().save(*args, **kwargs)
+
+    def start_day_of_the_week(self):
+        return self.schedule_start.date().weekday()
+
+    def end_day_of_the_week(self):
+        return self.schedule_end.date().weekday()
+
+    def start_hour(self):
+        return self.schedule_start.hour
+
+    def end_hour(self):
+        return self.schedule_end.hour
+
+    def start_minute(self):
+        return self.schedule_start.minute
+
+    def end_minute(self):
+        return self.schedule_end.minute
+
+    @staticmethod
+    def has_create_permission(request):
+        computer = Computer.objects.get(
+            external_id=request.parser_context["kwargs"]["computer_external_id"]
+        )
+        return (
+            request.user.is_superuser
+            or request.user == computer.program.program_director
+        )
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_read_permission(request):
+        return True  # User Queryset Filtering Here
+
+    def has_object_write_permission(self, request):
+        return (
+            request.user.is_superuser
+            or request.user == self.computer.program.program_director
+        )
+
+    def has_object_update_permission(self, request):
+        return self.has_object_write_permission(request)
+
+    def has_object_read_permission(self, request):
+        return self.has_object_write_permission(request)
 
 
 class StudentSlotAssociation(BaseUUIDModel):

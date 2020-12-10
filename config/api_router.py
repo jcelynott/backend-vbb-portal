@@ -7,6 +7,7 @@ from vbb_backend.program.api.viewsets.classroom import ClassroomViewSet
 from vbb_backend.program.api.viewsets.computer import ComputerViewSet
 from vbb_backend.program.api.viewsets.program import ProgramViewSet
 from vbb_backend.program.api.viewsets.school import SchoolViewSet
+from vbb_backend.program.api.viewsets.slot import SlotViewSet
 from vbb_backend.users.api.viewsets.student import StudentViewSet
 
 if settings.DEBUG:
@@ -23,6 +24,12 @@ program_nested_router = NestedSimpleRouter(router, r"program", lookup="program")
 program_nested_router.register(r"school", SchoolViewSet)
 
 program_nested_router.register(r"computer", ComputerViewSet)
+
+computer_nested_router = NestedSimpleRouter(
+    program_nested_router, r"computer", lookup="computer"
+)
+
+computer_nested_router.register(r"slot", SlotViewSet)
 
 
 school_nested_router = NestedSimpleRouter(
@@ -44,4 +51,5 @@ urlpatterns = [
     url(r"^", include(program_nested_router.urls)),
     url(r"^", include(school_nested_router.urls)),
     url(r"^", include(classroom_nested_router.urls)),
+    url(r"^", include(computer_nested_router.urls)),
 ]
