@@ -33,6 +33,7 @@ class SlotSerializer(serializers.ModelSerializer):
     end_minute = serializers.IntegerField(
         min_value=0, max_value=59, help_text="0-59 Minutes, Convert Time to UTC First"
     )
+    max_students = serializers.IntegerField(min_value=0)
 
     def validate(self, attrs):
         start_day_of_week = attrs.pop("start_day_of_the_week")
@@ -68,4 +69,9 @@ class SlotSerializer(serializers.ModelSerializer):
             "external_id",
             "schedule_start",
             "schedule_end",
+        )
+        read_only_fields = (
+            "is_mentor_assigned",
+            "is_student_assigned",
+            "assigned_students",
         )
