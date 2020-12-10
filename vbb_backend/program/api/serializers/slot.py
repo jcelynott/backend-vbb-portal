@@ -8,13 +8,31 @@ class SlotSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(source="external_id", read_only=True)
 
     start_day_of_the_week = serializers.IntegerField(
-        min_value=0, max_value=6, required=True
+        min_value=0,
+        max_value=6,
+        required=True,
+        help_text="Week Starts with Monday (0), Convert Time to UTC First",
     )
-    end_day_of_the_week = serializers.IntegerField(min_value=0, max_value=6)
-    start_hour = serializers.IntegerField(min_value=0, max_value=23, required=True)
-    start_minute = serializers.IntegerField(min_value=0, max_value=60)
-    end_hour = serializers.IntegerField(min_value=0, max_value=23)
-    end_minute = serializers.IntegerField(min_value=0, max_value=60)
+    end_day_of_the_week = serializers.IntegerField(
+        min_value=0,
+        max_value=6,
+        help_text="Week Starts with Monday (0), Convert Time to UTC first",
+    )
+    start_hour = serializers.IntegerField(
+        min_value=0,
+        max_value=23,
+        required=True,
+        help_text="0-23 Hours, Convert Time to UTC First",
+    )
+    start_minute = serializers.IntegerField(
+        min_value=0, max_value=59, help_text="0-59 Minutes, Convert Time to UTC First"
+    )
+    end_hour = serializers.IntegerField(
+        min_value=0, max_value=23, help_text="0-23 Hours, Convert Time to UTC First"
+    )
+    end_minute = serializers.IntegerField(
+        min_value=0, max_value=59, help_text="0-59 Minutes, Convert Time to UTC First"
+    )
 
     def validate(self, attrs):
         start_day_of_week = attrs.pop("start_day_of_the_week")
