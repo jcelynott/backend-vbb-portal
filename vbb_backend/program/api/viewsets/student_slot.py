@@ -4,36 +4,32 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from vbb_backend.program.api.serializers.school import SchoolSerializer
-from vbb_backend.program.models import Program, School
+from vbb_backend.program.api.serializers.student_slot import StudentSlotSerializer
+from vbb_backend.program.models import Program, Slot, StudentSlotAssociation
 from vbb_backend.users.models import UserTypeEnum
 
 
-class SchoolViewSet(ModelViewSet):
-    queryset = School.objects.all()
+class StudentSlotViewSet(ModelViewSet):
+    queryset = StudentSlotAssociation.objects.all()
     permission_classes = [IsAuthenticated, DRYPermissions]
-    serializer_class = SchoolSerializer
+    serializer_class = StudentSlotSerializer
     lookup_field = "external_id"
 
     def get_queryset(self):
         queryset = self.queryset
         user = self.request.user
-        program = Program.objects.get(
-            external_id=self.kwargs.get("program_external_id")
-        )
-        queryset = queryset.filter(program=program)
+        slot = Slot.objects.get(external_id=self.kwargs.get("slot_external_id"))
+        queryset = queryset.filter(slot=slot)
         if user.is_superuser:
             pass
         elif user.user_type in [UserTypeEnum.HEADMASTER.value]:
-            queryset = queryset.filter(program__program_director=user)
+            queryset = queryset.filter(slot__computer__program__program_director=user)
         else:
             raise PermissionDenied()
         return queryset
 
-    def get_program(self):
-        return get_object_or_404(
-            Program, external_id=self.kwargs.get("program_external_id")
-        )
+    def get_slot(self):
+        return get_object_or_404(Slot, external_id=self.kwargs.get("slot_external_id"))
 
     def perform_create(self, serializer):
-        serializer.save(program=self.get_program())
+        serializer.save(slot=self.get_slot())

@@ -16,7 +16,6 @@ class ClassroomViewSet(ModelViewSet):
     lookup_field = "external_id"
 
     def get_queryset(self):
-        print(self.kwargs)
         queryset = self.queryset
         user = self.request.user
         school = School.objects.get(external_id=self.kwargs.get("school_external_id"))
