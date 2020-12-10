@@ -226,7 +226,7 @@ class Computer(BaseUUIDModel):
     This Model Represents a Computer in a VBB Mentor Program that can host mentoring slots
     """
 
-    mentor_program = models.ForeignKey(
+    program = models.ForeignKey(
         Program,
         on_delete=models.PROTECT,
     )
@@ -235,7 +235,9 @@ class Computer(BaseUUIDModel):
     room_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
-        return f"{str(self.mentor_program)} {str(self.computer_number)} + ({self.computer_email})"
+        return (
+            f"{str(self.program)} {str(self.computer_number)} + ({self.computer_email})"
+        )
 
 
 class Slot(BaseUUIDModel):
@@ -255,7 +257,6 @@ class Slot(BaseUUIDModel):
     computer = models.ForeignKey(
         Computer,
         on_delete=models.PROTECT,
-        related_name="sessionslots",
         null=True,
     )
     language = models.CharField(max_length=254, choices=LanguageChoices)
@@ -263,7 +264,12 @@ class Slot(BaseUUIDModel):
     end = models.DateTimeField()  # All Date Times are in UTC
     event_id = models.CharField(max_length=60, null=True, blank=True)
     hangouts_link = models.CharField(max_length=60, null=True, blank=True)
-    is_assigned = models.BooleanField(default=False)
+    max_students = models.IntegerField(default=1)
+    assigned_students = models.IntegerField(
+        default=0
+    )  # Storing to avoid recalculation each time
+    is_mentor_assigned = models.BooleanField(default=False)
+    is_student_assigned = models.BooleanField(default=False)
 
 
 class StudentSlotAssociation(BaseUUIDModel):

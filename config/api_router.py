@@ -3,9 +3,10 @@ from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework_nested.routers import NestedSimpleRouter
 
+from vbb_backend.program.api.viewsets.classroom import ClassroomViewSet
+from vbb_backend.program.api.viewsets.computer import ComputerViewSet
 from vbb_backend.program.api.viewsets.program import ProgramViewSet
 from vbb_backend.program.api.viewsets.school import SchoolViewSet
-from vbb_backend.program.api.viewsets.classroom import ClassroomViewSet
 from vbb_backend.users.api.viewsets.student import StudentViewSet
 
 if settings.DEBUG:
@@ -20,6 +21,9 @@ program_nested_router = NestedSimpleRouter(router, r"program", lookup="program")
 
 
 program_nested_router.register(r"school", SchoolViewSet)
+
+program_nested_router.register(r"computer", ComputerViewSet)
+
 
 school_nested_router = NestedSimpleRouter(
     program_nested_router, r"school", lookup="school"
