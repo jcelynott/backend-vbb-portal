@@ -10,4 +10,4 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Classroom
-        exclude = ("deleted", "school")
+        exclude = ("deleted", "school", "external_id")

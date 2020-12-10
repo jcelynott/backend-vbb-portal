@@ -239,6 +239,32 @@ class Computer(BaseUUIDModel):
             f"{str(self.program)} {str(self.computer_number)} + ({self.computer_email})"
         )
 
+    @staticmethod
+    def has_create_permission(request):
+        program = Program.objects.get(
+            external_id=request.parser_context["kwargs"]["program_external_id"]
+        )
+        return request.user.is_superuser or request.user == program.program_director
+
+    @staticmethod
+    def has_write_permission(request):
+        return True
+
+    @staticmethod
+    def has_read_permission(request):
+        return True  # User Queryset Filtering Here
+
+    def has_object_write_permission(self, request):
+        return (
+            request.user.is_superuser or request.user == self.program.program_director
+        )
+
+    def has_object_update_permission(self, request):
+        return self.has_object_write_permission(request)
+
+    def has_object_read_permission(self, request):
+        return self.has_object_write_permission(request)
+
 
 class Slot(BaseUUIDModel):
     """

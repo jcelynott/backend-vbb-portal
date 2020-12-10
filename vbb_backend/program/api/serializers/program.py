@@ -16,7 +16,7 @@ class ProgramSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Program
-        exclude = ("deleted",)
+        exclude = ("deleted", "external_id")
 
     def validate(self, attrs):
         user = self.context["request"].user
