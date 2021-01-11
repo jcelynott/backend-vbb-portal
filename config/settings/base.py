@@ -317,10 +317,10 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # Simple JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=env("JWT_ACCESS_TOKEN_LIFETIME", default=10)
+        minutes=env("JWT_ACCESS_TOKEN_LIFETIME", default=100000000)
     ),
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        minutes=env("JWT_REFRESH_TOKEN_LIFETIME", default=30)
+        minutes=env("JWT_REFRESH_TOKEN_LIFETIME", default=30000000)
     ),
     "ROTATE_REFRESH_TOKENS": True,
 }
