@@ -49,7 +49,7 @@ class User(AbstractUser, BaseUUIDModel):
     vbb_chapter = models.CharField(
         max_length=40, null=True, blank=True, verbose_name=_("VBB Chapter")
     )
-    date_of_birth = models.DateField(blank=False)
+    date_of_birth = models.DateField(blank=True)
     primary_language = models.CharField(max_length=254, choices=LanguageChoices)
     time_zone = models.CharField(max_length=32, choices=TIMEZONES)
 
